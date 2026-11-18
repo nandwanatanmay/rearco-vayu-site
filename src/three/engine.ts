@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FACADE } from '../data/facade';
 import { MapControls } from 'three/examples/jsm/controls/MapControls.js';
 
 /**
@@ -393,26 +394,54 @@ export function speak(text: string, on: boolean) {
   window.speechSynthesis.speak(u);
 }
 
-/** Procedural facade texture: one tile = one bay (4 m) × one storey (3 m). */
-export function facadeTexture(base = '#efe9df', glass = '#5d7286', band = '#d9cfc0') {
+/**
+ * Procedural facade texture. One tile = two bays (8 m) × one storey (3 m):
+ *   bay A – "Daisy Blue" feature wall with a window
+ *   bay B – balcony: white ceiling edge, textured base-colour back wall, glazed door,
+ *           dark metal railing above a white upstand
+ * with a white slab edge along the bottom (finishes: approved paint scheme, 31.07.2026).
+ */
+export function facadeTexture(pal: { base: string; feature: string; white: string; balconyWall: string; railing: string; glass: string } = FACADE) {
   const c = document.createElement('canvas');
-  c.width = 128;
+  c.width = 256;
   c.height = 96;
   const g = c.getContext('2d')!;
-  g.fillStyle = base;
-  g.fillRect(0, 0, 128, 96);
-  g.fillStyle = band;
-  g.fillRect(0, 88, 128, 8); // floor slab band
-  g.fillStyle = glass;
-  g.fillRect(18, 22, 92, 50); // window
-  g.fillStyle = 'rgba(255,255,255,0.25)';
-  g.fillRect(18, 22, 92, 8);
-  g.fillStyle = base;
-  g.fillRect(62, 22, 4, 50); // mullion
+  g.fillStyle = pal.base;
+  g.fillRect(0, 0, 256, 96);
+
+  // Bay A: feature wall + window.
+  g.fillStyle = pal.feature;
+  g.fillRect(0, 0, 128, 90);
+  g.fillStyle = pal.glass;
+  g.fillRect(30, 22, 68, 46);
+  g.fillStyle = 'rgba(255,255,255,0.22)';
+  g.fillRect(30, 22, 68, 8);
+  g.fillStyle = pal.white;
+  g.fillRect(26, 68, 76, 4); // sill
+
+  // Bay B: balcony recess.
+  g.fillStyle = pal.balconyWall;
+  g.fillRect(136, 8, 112, 80);
+  g.fillStyle = pal.white;
+  g.fillRect(132, 4, 120, 8); // balcony ceiling edge
+  g.fillStyle = pal.glass;
+  g.fillRect(150, 22, 84, 46); // glazed door
+  g.fillStyle = 'rgba(255,255,255,0.18)';
+  g.fillRect(150, 22, 84, 8);
+  g.fillStyle = pal.balconyWall;
+  g.fillRect(189, 22, 3, 46); // door mullion
+  g.fillStyle = pal.railing;
+  for (let x = 138; x < 246; x += 6) g.fillRect(x, 46, 1.4, 24); // railing bars
+  g.fillRect(136, 44, 112, 2.5); // hand rail
+  g.fillStyle = pal.white;
+  g.fillRect(132, 70, 120, 18); // upstand
+
+  g.fillStyle = pal.white;
+  g.fillRect(0, 88, 256, 8); // slab edge
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
-  t.repeat.set(1 / 4, 1 / 3);
+  t.repeat.set(1 / 8, 1 / 3);
   t.anisotropy = 8;
   return t;
 }

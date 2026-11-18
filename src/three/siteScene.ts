@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import footprints from '../data/siteFootprints.json';
 import { HOTSPOTS, MASTER } from '../data/masterPlan';
 import { Engine, facadeTexture, inPoly } from './engine';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { FACADE, SITE_COLOURS } from '../data/facade';
 
 /**
  * 3D massing model of the site, built on top of the rendered master plan.
@@ -88,8 +90,8 @@ export interface SiteScene {
 
 export function buildSite(engine: Engine, groundTex: THREE.Texture): SiteScene {
   const { scene } = engine;
-  scene.background = new THREE.Color('#cfdde8');
-  scene.fog = new THREE.Fog('#cfdde8', 400, 1400);
+  scene.background = new THREE.Color(SITE_COLOURS.sky);
+  scene.fog = new THREE.Fog(SITE_COLOURS.sky, 400, 1400);
 
   // Lights: soft sky + sun with shadows.
   scene.add(new THREE.HemisphereLight('#ffffff', '#8a9a7a', 1.1));
@@ -124,8 +126,8 @@ export function buildSite(engine: Engine, groundTex: THREE.Texture): SiteScene {
 
   // Buildings: extrude the footprints traced from the plan.
   const fac = facadeTexture();
-  const facGhost = facadeTexture('#f3f1ec', '#9fb0bf', '#e5e0d7');
-  const roofMat = new THREE.MeshStandardMaterial({ color: '#d7d3cc', roughness: 0.95 });
+  const facGhost = facadeTexture({ base: '#f1eee6', feature: '#cbd8ea', white: '#f6f5f0', balconyWall: '#e6e1d4', railing: '#8b9296', glass: '#9fb0bf' });
+  const roofMat = new THREE.MeshStandardMaterial({ color: FACADE.crown, roughness: 0.95 });
   const fp = footprints as Record<string, number[][][]>;
   const buildingMeshes: THREE.Mesh[] = [];
   const meshById = new Map<string, THREE.Mesh[]>();
@@ -172,7 +174,7 @@ export function buildSite(engine: Engine, groundTex: THREE.Texture): SiteScene {
   }
 
   // Water on the pools for a little sheen.
-  const water = new THREE.MeshStandardMaterial({ color: '#57b8e0', transparent: true, opacity: 0.45, roughness: 0.1, metalness: 0.2 });
+  const water = new THREE.MeshStandardMaterial({ color: SITE_COLOURS.pool, transparent: true, opacity: 0.55, roughness: 0.1, metalness: 0.2 });
   for (const [x, y, w, h] of [[352, 598, 82, 168], [413, 588, 32, 34]] as const) {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w * PX, h * PX), water);
     m.rotation.x = -Math.PI / 2;
@@ -180,13 +182,17 @@ export function buildSite(engine: Engine, groundTex: THREE.Texture): SiteScene {
     scene.add(m);
   }
 
-  // Trees (instanced trunks + canopies).
+  // Trees: palms along the edges and at the entrance (as in the renders), round-canopy trees inside.
+  const isPalm = (x: number, y: number) => y > 1370 || x < 80 || x > 720;
+  const palms = TREES.filter(([x, y]) => isPalm(x, y));
+  const round = TREES.filter(([x, y]) => !isPalm(x, y));
+
   const trunkGeo = new THREE.CylinderGeometry(0.35, 0.5, 4, 6);
   const crownGeo = new THREE.IcosahedronGeometry(3.6, 1);
-  const trunks = new THREE.InstancedMesh(trunkGeo, new THREE.MeshStandardMaterial({ color: '#6b4f36' }), TREES.length);
-  const crowns = new THREE.InstancedMesh(crownGeo, new THREE.MeshStandardMaterial({ color: '#4f7d36', roughness: 0.9, flatShading: true }), TREES.length);
+  const trunks = new THREE.InstancedMesh(trunkGeo, new THREE.MeshStandardMaterial({ color: '#6b4f36' }), round.length);
+  const crowns = new THREE.InstancedMesh(crownGeo, new THREE.MeshStandardMaterial({ color: '#4f7d36', roughness: 0.9, flatShading: true }), round.length);
   const m4 = new THREE.Matrix4();
-  TREES.forEach(([x, y, s], i) => {
+  round.forEach(([x, y, s], i) => {
     const p = toWorld(x, y);
     m4.compose(p.clone().setY(2 * s), new THREE.Quaternion(), new THREE.Vector3(s, s, s));
     trunks.setMatrixAt(i, m4);
@@ -195,6 +201,31 @@ export function buildSite(engine: Engine, groundTex: THREE.Texture): SiteScene {
   });
   trunks.castShadow = crowns.castShadow = true;
   scene.add(trunks, crowns);
+
+  const palmTrunkGeo = new THREE.CylinderGeometry(0.28, 0.42, 9, 6);
+  palmTrunkGeo.translate(0, 4.5, 0);
+  const frondParts: THREE.BufferGeometry[] = [];
+  for (let k = 0; k < 9; k++) {
+    const f = new THREE.ConeGeometry(0.55, 5.2, 4);
+    f.scale(1, 1, 0.25); // flatten into a blade
+    f.translate(0, 2.6, 0);
+    f.rotateZ(THREE.MathUtils.degToRad(72 + (k % 2) * 12)); // droop outwards
+    f.rotateY((k / 9) * Math.PI * 2);
+    f.translate(0, 9, 0);
+    frondParts.push(f);
+  }
+  const palmFrondGeo = mergeGeometries(frondParts)!;
+  const palmTrunks = new THREE.InstancedMesh(palmTrunkGeo, new THREE.MeshStandardMaterial({ color: SITE_COLOURS.palmTrunk, roughness: 1 }), palms.length);
+  const palmFronds = new THREE.InstancedMesh(palmFrondGeo, new THREE.MeshStandardMaterial({ color: SITE_COLOURS.palmFrond, roughness: 0.9, side: THREE.DoubleSide }), palms.length);
+  palms.forEach(([x, y, s], i) => {
+    const p = toWorld(x, y);
+    const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), i * 1.7);
+    m4.compose(p, q, new THREE.Vector3(s, s, s));
+    palmTrunks.setMatrixAt(i, m4);
+    palmFronds.setMatrixAt(i, m4);
+  });
+  palmTrunks.castShadow = palmFronds.castShadow = true;
+  scene.add(palmTrunks, palmFronds);
 
   // Amenity labels (visible when reasonably close).
   for (const h of HOTSPOTS) {

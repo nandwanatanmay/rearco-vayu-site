@@ -1,4 +1,6 @@
-# Wind Park – Interactive Floor Plans (React + TypeScript)
+# Vāyu (Wind Park) – Interactive Floor Plans + 3D site (React + TypeScript)
+
+> Copy of `kvd-windpark-front`, being extended for the Rearco Vāyu site. Façade finishes follow the approved paint scheme — see `docs/FACADE_ANALYSIS.md`.
 
 An interactive SVG floor plan viewer built from the supplied brochure drawings:
 7 unit plans (Tower 1, Tower 2 & 3 – Types 1245 / 1505; Tower 6 & 7 – Types 997‑1/2/3) plus the site master plan.
