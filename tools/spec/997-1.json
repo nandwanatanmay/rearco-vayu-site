@@ -1,0 +1,31 @@
+{
+ "id":"t67-997-1","src":"T6&7-997-Type-1","title":"Tower 6 & 7 · Type 997-1","config":"2 BHK + 2 Toilets",
+ "areas":{"carpet":"51.85 sq.m","builtUp":"69.19 sq.m","balcony":"10.84 sq.m"},
+ "crop":[0,0,900,560],
+ "entry":{"x":838,"y":535,"dir":"up"},
+ "rooms":[
+  {"id":"liv","name":"Drawing / Dining","type":"living","poly":[[466,306],[870,306],[870,512],[564,512],[564,370],[466,370]],"label":[692,372],"w":4885,"l":3060,"area":14.94,"dimRect":[568,310,870,500],"fixtures":["Sofa with centre table","Side table","4-seater dining table","Crockery/console unit (west wall)"],"notes":"Polygon includes the passage to M. Bedroom, Bedroom-2 and Toilet-2. Main door at the south-east corner. Labels on the source are rotated 90°."},
+  {"id":"kit","name":"Kitchen","type":"kitchen","poly":[[579,145],[681,145],[681,306],[579,306]],"label":[615,238],"w":1835,"l":2520,"area":4.62,"dimRect":[579,145,681,306],"fixtures":["Parallel/L counter","Sink with drainboard","Hob (4 burner)"],"notes":"Open to drawing/dining."},
+  {"id":"mbr","name":"M. Bedroom","type":"bedroom","poly":[[227,306],[462,306],[462,504],[180,504],[180,397],[227,397]],"label":[272,398],"w":3655,"l":3060,"area":11.18,"dimRect":[184,310,459,500],"fixtures":["Double bed","Two bedside tables","Wardrobe CB-1","Wall console"],"notes":"Doors to Toilet-1 and Balcony-1."},
+  {"id":"t1","name":"Toilet-1","type":"toilet","poly":[[130,262],[227,262],[227,397],[130,397]],"label":[195,370],"w":1525,"l":2125,"area":3.24,"dimRect":[130,263,223,394],"fixtures":["WC","Wash basin","Shower point"],"notes":"Attached to M. Bedroom."},
+  {"id":"br2","name":"Bedroom-2","type":"bedroom","poly":[[367,73],[449,73],[449,110],[561,110],[561,306],[367,306]],"label":[505,180],"w":3050,"l":3050,"area":9.3,"dimRect":[371,110,561,302],"fixtures":["Double bed","Two bedside tables","Wardrobe CB-2","Wall unit (east wall)"],"notes":"Door to Balcony-2."},
+  {"id":"t2","name":"Toilet-2","type":"toilet","poly":[[466,370],[564,370],[564,505],[466,505]],"label":[532,456],"w":1525,"l":2045,"area":3.11,"dimRect":[466,375,561,500],"fixtures":["WC","Wash basin","Shower point"],"notes":"Common toilet. Window on south wall."},
+  {"id":"bal1","name":"Balcony-1","type":"balcony","poly":[[231,210],[352,210],[352,306],[231,306]],"label":[295,255],"width":"1500mm wide","area":3.05,"fixtures":["Planter"],"notes":"Accessed from M. Bedroom."},
+  {"id":"bal2","name":"Balcony-2","type":"balcony","poly":[[447,13],[563,13],[563,106],[447,106]],"label":[512,62],"width":"1500mm wide","area":2.78,"fixtures":["Planters","Lounge chair"],"notes":"Accessed from Bedroom-2."},
+  {"id":"bal3","name":"Balcony-3","type":"balcony","poly":[[689,135],[760,135],[760,210],[879,210],[879,306],[689,306]],"label":[755,255],"width":"1500mm wide","area":5,"fixtures":["Planters","Bistro table with two chairs"],"notes":"Accessed from Drawing/Dining."},
+  {"id":"pl1","name":"PL (Plumbing shaft)","type":"service","poly":[[27,217],[216,217],[216,253],[27,253]],"label":[120,235],"area":null,"fixtures":[],"notes":"Marked 'PL' on source."},
+  {"id":"pl2","name":"PL (Plumbing shaft)","type":"service","poly":[[467,508],[502,508],[502,534],[467,534]],"label":[484,521],"area":null,"fixtures":[],"notes":"Marked 'PL' on source."},
+  {"id":"sh1","name":"Shaft","type":"service","uncertain":true,"poly":[[696,143],[720,143],[720,188],[696,188]],"label":[708,165],"area":null,"fixtures":[],"notes":"X-marked void – unlabelled; assumed service shaft."}
+ ],
+ "doors":[
+  {"h":[857,510],"c":[797,510],"o":[857,452],"main":true},
+  {"h":[229,312],"c":[229,357],"o":[184,312]},
+  {"h":[234,306],"c":[285,306],"o":[234,256]},
+  {"h":[462,310],"c":[462,366],"o":[406,310]},
+  {"h":[561,306],"c":[503,306],"o":[561,248]},
+  {"h":[555,106],"c":[510,106],"o":[555,60]},
+  {"h":[561,370],"c":[513,370],"o":[561,418]},
+  {"h":[830,306],"c":[780,306],"o":[830,256]}
+ ],
+ "windows":[[285,302,324,310],[742,302,780,310],[510,500,560,509],[467,103,505,110]]
+}

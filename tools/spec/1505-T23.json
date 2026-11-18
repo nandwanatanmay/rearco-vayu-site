@@ -1,0 +1,816 @@
+{
+ "id": "t23-1505",
+ "src": "1505-T2&3",
+ "title": "Tower 2 & 3 \u00b7 Type 1505",
+ "config": "3 BHK + 2 Toilets",
+ "areas": {
+  "carpet": "82.76 sq.m",
+  "builtUp": "108.05 sq.m",
+  "balcony": "19.07 sq.m"
+ },
+ "crop": [
+  0,
+  10,
+  900,
+  845
+ ],
+ "wallLo": 70,
+ "wallHi": 128,
+ "entry": {
+  "x": 840,
+  "y": 779,
+  "dir": "up"
+ },
+ "rooms": [
+  {
+   "id": "mbr",
+   "name": "M. Bedroom",
+   "type": "bedroom",
+   "poly": [
+    [
+     185,
+     158
+    ],
+    [
+     496,
+     158
+    ],
+    [
+     496,
+     408
+    ],
+    [
+     139,
+     408
+    ],
+    [
+     139,
+     286
+    ],
+    [
+     185,
+     286
+    ]
+   ],
+   "label": [
+    338,
+    221
+   ],
+   "w": 3810,
+   "l": 3050,
+   "area": 11.62,
+   "dimRect": [
+    191,
+    163,
+    490,
+    404
+   ],
+   "fixtures": [
+    "Double bed",
+    "Two bedside tables",
+    "Built-in wardrobe (niche on west wall)",
+    "Wall console/unit on north wall"
+   ],
+   "notes": "Wood-finish flooring shown. Door to Balcony (1500 wide) and to Toilet 1."
+  },
+  {
+   "id": "t1",
+   "name": "Toilet 1",
+   "type": "toilet",
+   "poly": [
+    [
+     318,
+     29
+    ],
+    [
+     496,
+     29
+    ],
+    [
+     496,
+     158
+    ],
+    [
+     318,
+     158
+    ]
+   ],
+   "label": [
+    400,
+    111
+   ],
+   "w": 2135,
+   "l": 1555,
+   "area": 3.31,
+   "dimRect": [
+    325,
+    45,
+    490,
+    152
+   ],
+   "fixtures": [
+    "WC",
+    "Wash basin",
+    "Shower point"
+   ],
+   "notes": "Attached to M. Bedroom. Window on west wall."
+  },
+  {
+   "id": "br3",
+   "name": "Bedroom 3",
+   "type": "bedroom",
+   "poly": [
+    [
+     496,
+     158
+    ],
+    [
+     523,
+     158
+    ],
+    [
+     523,
+     116
+    ],
+    [
+     617,
+     116
+    ],
+    [
+     617,
+     158
+    ],
+    [
+     771,
+     158
+    ],
+    [
+     771,
+     408
+    ],
+    [
+     496,
+     408
+    ]
+   ],
+   "label": [
+    587,
+    274
+   ],
+   "w": 3355,
+   "l": 3050,
+   "area": 10.23,
+   "dimRect": [
+    502,
+    163,
+    766,
+    404
+   ],
+   "fixtures": [
+    "Double bed",
+    "Two bedside tables",
+    "Built-in wardrobe (north niche)",
+    "Wall unit on west wall"
+   ],
+   "notes": "Door to Balcony (1500 wide) on north side."
+  },
+  {
+   "id": "br2",
+   "name": "Bedroom 2",
+   "type": "bedroom",
+   "poly": [
+    [
+     70,
+     408
+    ],
+    [
+     321,
+     408
+    ],
+    [
+     321,
+     659
+    ],
+    [
+     18,
+     659
+    ],
+    [
+     18,
+     556
+    ],
+    [
+     70,
+     556
+    ]
+   ],
+   "label": [
+    195,
+    465
+   ],
+   "w": 3050,
+   "l": 3050,
+   "area": 9.3,
+   "dimRect": [
+    75,
+    413,
+    316,
+    654
+   ],
+   "fixtures": [
+    "Double bed",
+    "Two bedside tables",
+    "Built-in wardrobe (west niche)",
+    "Wall console on north wall"
+   ],
+   "notes": "Door to Balcony (1395 wide)."
+  },
+  {
+   "id": "t2",
+   "name": "Toilet 2",
+   "type": "toilet",
+   "poly": [
+    [
+     321,
+     508
+    ],
+    [
+     452,
+     508
+    ],
+    [
+     452,
+     702
+    ],
+    [
+     321,
+     702
+    ]
+   ],
+   "label": [
+    382,
+    566
+   ],
+   "w": 1555,
+   "l": 2340,
+   "area": 3.63,
+   "dimRect": [
+    326,
+    514,
+    448,
+    698
+   ],
+   "fixtures": [
+    "WC",
+    "Wash basin",
+    "Shower point"
+   ],
+   "notes": "Common toilet. Window on south wall."
+  },
+  {
+   "id": "liv",
+   "name": "Living / Dining",
+   "type": "living",
+   "poly": [
+    [
+     321,
+     408
+    ],
+    [
+     884,
+     408
+    ],
+    [
+     884,
+     727
+    ],
+    [
+     808,
+     727
+    ],
+    [
+     808,
+     658
+    ],
+    [
+     520,
+     658
+    ],
+    [
+     520,
+     627
+    ],
+    [
+     457,
+     627
+    ],
+    [
+     457,
+     508
+    ],
+    [
+     321,
+     508
+    ]
+   ],
+   "label": [
+    695,
+    571
+   ],
+   "w": 5405,
+   "l": 3050,
+   "area": 16.48,
+   "dimRect": [
+    457,
+    413,
+    884,
+    654
+   ],
+   "fixtures": [
+    "L-shaped sofa set",
+    "Centre table",
+    "Two side tables",
+    "6-seater dining table",
+    "Wall unit above kitchen wall"
+   ],
+   "notes": "Labelled spelling on source: 'LIVING/DINNIG'. Polygon also includes passage to bedrooms/toilet and entry foyer; labelled dimensions refer to the main living/dining zone. Main entrance on south-east."
+  },
+  {
+   "id": "kit",
+   "name": "Kitchen",
+   "type": "kitchen",
+   "poly": [
+    [
+     507,
+     658
+    ],
+    [
+     710,
+     658
+    ],
+    [
+     710,
+     820
+    ],
+    [
+     507,
+     820
+    ]
+   ],
+   "label": [
+    601,
+    725
+   ],
+   "w": 2590,
+   "l": 2095,
+   "area": null,
+   "areaNote": "Area not printed on this plan (2.590 \u00d7 2.095 m = 5.43 m\u00b2 computed from labelled dimensions)",
+   "dimRect": [
+    507,
+    655,
+    709,
+    820
+   ],
+   "fixtures": [
+    "L-shaped counter",
+    "Sink with drainboard",
+    "Hob (4 burner)",
+    "Refrigerator",
+    "Microwave/appliance unit"
+   ],
+   "notes": "Open to living/dining. Door to the utility balcony on west."
+  },
+  {
+   "id": "balA",
+   "name": "Balcony",
+   "type": "balcony",
+   "poly": [
+    [
+     142,
+     27
+    ],
+    [
+     318,
+     27
+    ],
+    [
+     318,
+     158
+    ],
+    [
+     185,
+     158
+    ],
+    [
+     185,
+     286
+    ],
+    [
+     142,
+     286
+    ]
+   ],
+   "label": [
+    229,
+    101
+   ],
+   "width": "1500 wide",
+   "area": 4.58,
+   "fixtures": [
+    "Planters"
+   ],
+   "notes": "Accessed from M. Bedroom."
+  },
+  {
+   "id": "balB",
+   "name": "Balcony",
+   "type": "balcony",
+   "poly": [
+    [
+     625,
+     27
+    ],
+    [
+     884,
+     27
+    ],
+    [
+     884,
+     408
+    ],
+    [
+     771,
+     408
+    ],
+    [
+     771,
+     158
+    ],
+    [
+     625,
+     158
+    ]
+   ],
+   "label": [
+    780,
+    77
+   ],
+   "width": "1500 wide",
+   "area": 9.97,
+   "fixtures": [
+    "Planters"
+   ],
+   "notes": "L-shaped; accessed from Bedroom 3 and Living."
+  },
+  {
+   "id": "balC",
+   "name": "Balcony",
+   "type": "balcony",
+   "poly": [
+    [
+     18,
+     299
+    ],
+    [
+     139,
+     299
+    ],
+    [
+     139,
+     408
+    ],
+    [
+     70,
+     408
+    ],
+    [
+     70,
+     554
+    ],
+    [
+     18,
+     554
+    ]
+   ],
+   "label": [
+    73,
+    353
+   ],
+   "width": "1395 wide",
+   "area": 3.44,
+   "fixtures": [
+    "Planters"
+   ],
+   "notes": "Accessed from Bedroom 2."
+  },
+  {
+   "id": "balD",
+   "name": "Utility balcony (unlabelled)",
+   "type": "balcony",
+   "uncertain": true,
+   "poly": [
+    [
+     385,
+     702
+    ],
+    [
+     497,
+     702
+    ],
+    [
+     497,
+     784
+    ],
+    [
+     385,
+     784
+    ]
+   ],
+   "label": [
+    441,
+    744
+   ],
+   "area": null,
+   "areaNote": "Not labelled on this plan",
+   "fixtures": [],
+   "notes": "Open space off the kitchen; name/area not printed on this drawing."
+  },
+  {
+   "id": "sh1",
+   "name": "Shaft",
+   "type": "service",
+   "uncertain": true,
+   "poly": [
+    [
+     502,
+     30
+    ],
+    [
+     616,
+     30
+    ],
+    [
+     616,
+     105
+    ],
+    [
+     502,
+     105
+    ]
+   ],
+   "label": [
+    559,
+    67
+   ],
+   "area": null,
+   "fixtures": [],
+   "notes": "X-marked void \u2013 shown without a label on the source; assumed service shaft/duct."
+  },
+  {
+   "id": "sh2",
+   "name": "Shaft",
+   "type": "service",
+   "uncertain": true,
+   "poly": [
+    [
+     458,
+     635
+    ],
+    [
+     495,
+     635
+    ],
+    [
+     495,
+     698
+    ],
+    [
+     458,
+     698
+    ]
+   ],
+   "label": [
+    476,
+    666
+   ],
+   "area": null,
+   "fixtures": [],
+   "notes": "X-marked void \u2013 unlabelled; assumed service shaft."
+  },
+  {
+   "id": "sh3",
+   "name": "Shaft",
+   "type": "service",
+   "uncertain": true,
+   "poly": [
+    [
+     731,
+     679
+    ],
+    [
+     779,
+     679
+    ],
+    [
+     779,
+     814
+    ],
+    [
+     731,
+     814
+    ]
+   ],
+   "label": [
+    755,
+    747
+   ],
+   "area": null,
+   "fixtures": [],
+   "notes": "X-marked void \u2013 unlabelled; assumed service shaft."
+  }
+ ],
+ "doors": [
+  {
+   "h": [
+    296,
+    158
+   ],
+   "c": [
+    231,
+    158
+   ],
+   "o": [
+    296,
+    93
+   ]
+  },
+  {
+   "h": [
+    490,
+    158
+   ],
+   "c": [
+    431,
+    158
+   ],
+   "o": [
+    490,
+    98
+   ]
+  },
+  {
+   "h": [
+    490,
+    408
+   ],
+   "c": [
+    425,
+    408
+   ],
+   "o": [
+    490,
+    343
+   ]
+  },
+  {
+   "h": [
+    515,
+    408
+   ],
+   "c": [
+    576,
+    408
+   ],
+   "o": [
+    515,
+    347
+   ]
+  },
+  {
+   "h": [
+    705,
+    158
+   ],
+   "c": [
+    766,
+    158
+   ],
+   "o": [
+    705,
+    97
+   ]
+  },
+  {
+   "h": [
+    796,
+    408
+   ],
+   "c": [
+    866,
+    408
+   ],
+   "o": [
+    796,
+    338
+   ]
+  },
+  {
+   "h": [
+    321,
+    413
+   ],
+   "c": [
+    321,
+    484
+   ],
+   "o": [
+    249,
+    413
+   ]
+  },
+  {
+   "h": [
+    127,
+    408
+   ],
+   "c": [
+    75,
+    408
+   ],
+   "o": [
+    127,
+    357
+   ]
+  },
+  {
+   "h": [
+    326,
+    508
+   ],
+   "c": [
+    385,
+    508
+   ],
+   "o": [
+    326,
+    567
+   ]
+  },
+  {
+   "h": [
+    500,
+    707
+   ],
+   "c": [
+    500,
+    762
+   ],
+   "o": [
+    445,
+    707
+   ]
+  },
+  {
+   "h": [
+    880,
+    721
+   ],
+   "c": [
+    802,
+    721
+   ],
+   "o": [
+    880,
+    638
+   ],
+   "main": true
+  }
+ ],
+ "windows": [
+  [
+   313,
+   45,
+   325,
+   99
+  ],
+  [
+   206,
+   153,
+   231,
+   163
+  ],
+  [
+   400,
+   698,
+   448,
+   707
+  ],
+  [
+   779,
+   744,
+   789,
+   813
+  ]
+ ],
+ "note": "This drawing is titled 'Type 1505' but its room layout and room dimensions are identical to Type 1245; the stated carpet/built-up areas (82.76 / 108.05 sq.m) are shown as printed on the source."
+}

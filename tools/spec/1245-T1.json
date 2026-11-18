@@ -1,0 +1,36 @@
+{
+ "id":"t1-1245","src":"1245-T1","title":"Tower 1 · Type 1245","config":"3 BHK + 2 Toilets",
+ "areas":{"carpet":"65.45 sq.m","builtUp":"91.00 sq.m","balcony":"19.62 sq.m"},
+ "crop":[0,28,900,860],"wallLo":70,"wallHi":128,
+ "entry":{"x":838,"y":790,"dir":"up"},
+ "rooms":[
+  {"id":"mbr","name":"M. Bedroom","type":"bedroom","poly":[[186,172],[496,172],[496,421],[140,421],[140,300],[186,300]],"label":[338,235],"w":3810,"l":3050,"area":11.62,"dimRect":[192,177,490,417],"fixtures":["Double bed","Two bedside tables","Built-in wardrobe (niche on west wall)","Wall console/unit on north wall"],"notes":"Wood-finish flooring shown. Door to Balcony (1500 wide) and to Toilet 1."},
+  {"id":"t1","name":"Toilet 1","type":"toilet","poly":[[318,44],[496,44],[496,172],[318,172]],"label":[400,125],"w":2135,"l":1555,"area":3.31,"dimRect":[325,60,490,166],"fixtures":["WC","Wash basin","Shower point"],"notes":"Attached to M. Bedroom. Window on west wall."},
+  {"id":"br3","name":"Bedroom 3","type":"bedroom","poly":[[496,172],[522,172],[522,130],[616,130],[616,172],[769,172],[769,421],[496,421]],"label":[586,288],"w":3355,"l":3050,"area":10.23,"dimRect":[501,177,764,417],"fixtures":["Double bed","Two bedside tables","Built-in wardrobe (north niche)","Wall unit on west wall"],"notes":"Door to Balcony (1500 wide) on north side."},
+  {"id":"br2","name":"Bedroom 2","type":"bedroom","poly":[[72,421],[321,421],[321,671],[20,671],[20,568],[72,568]],"label":[196,478],"w":3050,"l":3050,"area":9.30,"dimRect":[77,426,316,666],"fixtures":["Double bed","Two bedside tables","Built-in wardrobe (west niche)","Wall console on north wall"],"notes":"Door to Balcony (1395 wide)."},
+  {"id":"t2","name":"Toilet 2","type":"toilet","poly":[[321,520],[452,520],[452,713],[321,713]],"label":[382,578],"w":1555,"l":2340,"area":3.63,"dimRect":[326,526,448,709],"fixtures":["WC","Wash basin","Shower point"],"notes":"Common toilet. Window on south wall."},
+  {"id":"liv","name":"Living / Dining","type":"living","poly":[[321,421],[882,421],[882,738],[806,738],[806,670],[519,670],[519,639],[457,639],[457,520],[321,520]],"label":[694,583],"w":5405,"l":3050,"area":16.48,"dimRect":[457,426,882,666],"fixtures":["L-shaped sofa set","Centre table","Two side tables","6-seater dining table","Wall unit above kitchen wall"],"notes":"Labelled spelling on source: 'LIVING/DINNIG'. Polygon also includes passage to bedrooms/toilet and entry foyer; labelled dimensions refer to the main living/dining zone. Main entrance on south-east."},
+  {"id":"kit","name":"Kitchen","type":"kitchen","poly":[[506,670],[708,670],[708,831],[506,831]],"label":[600,736],"w":2590,"l":2095,"area":null,"areaNote":"Area not printed on this plan (2.590 × 2.095 m = 5.43 m² computed from labelled dimensions)","dimRect":[506,667,707,831],"fixtures":["L-shaped counter","Sink with drainboard","Hob (4 burner)","Refrigerator","Microwave/appliance unit"],"notes":"Open to living/dining. Door to the utility balcony on west."},
+  {"id":"balA","name":"Balcony","type":"balcony","poly":[[143,42],[318,42],[318,172],[186,172],[186,300],[143,300]],"label":[230,115],"width":"1500 wide","area":4.58,"fixtures":["Planters"],"notes":"Accessed from M. Bedroom."},
+  {"id":"balB","name":"Balcony","type":"balcony","poly":[[624,42],[882,42],[882,421],[769,421],[769,172],[624,172]],"label":[778,92],"width":"1500 wide","area":9.97,"fixtures":["Planters"],"notes":"L-shaped; accessed from Bedroom 3 and Living."},
+  {"id":"balC","name":"Balcony","type":"balcony","poly":[[20,312],[140,312],[140,421],[72,421],[72,566],[20,566]],"label":[75,366],"width":"1395 wide","area":3.44,"fixtures":["Planters"],"notes":"Accessed from Bedroom 2."},
+  {"id":"balD","name":"Utility balcony (unlabelled)","type":"balcony","uncertain":true,"poly":[[385,713],[497,713],[497,795],[385,795]],"label":[441,755],"area":null,"areaNote":"Not labelled on this plan","fixtures":[],"notes":"Open space off the kitchen; name/area not printed on this drawing (the Tower 2 & 3 plan labels the same space 'Balcony-4, 1500 wide, 1.63 sq.m')."},
+  {"id":"sh1","name":"Shaft","type":"service","uncertain":true,"poly":[[501,45],[615,45],[615,119],[501,119]],"label":[558,82],"area":null,"fixtures":[],"notes":"X-marked void – shown without a label on the source; assumed service shaft/duct."},
+  {"id":"sh2","name":"Shaft","type":"service","uncertain":true,"poly":[[458,647],[495,647],[495,709],[458,709]],"label":[476,678],"area":null,"fixtures":[],"notes":"X-marked void – unlabelled; assumed service shaft."},
+  {"id":"sh3","name":"Shaft","type":"service","uncertain":true,"poly":[[729,691],[777,691],[777,825],[729,825]],"label":[753,758],"area":null,"fixtures":[],"notes":"X-marked void – unlabelled; assumed service shaft."}
+ ],
+ "doors":[
+  {"h":[297,172],"c":[232,172],"o":[297,107]},
+  {"h":[490,172],"c":[431,172],"o":[490,112]},
+  {"h":[490,421],"c":[425,421],"o":[490,356]},
+  {"h":[514,421],"c":[575,421],"o":[514,360]},
+  {"h":[703,172],"c":[764,172],"o":[703,111]},
+  {"h":[794,421],"c":[864,421],"o":[794,351]},
+  {"h":[321,426],"c":[321,497],"o":[250,426]},
+  {"h":[128,421],"c":[77,421],"o":[128,370]},
+  {"h":[326,520],"c":[385,520],"o":[326,579]},
+  {"h":[500,718],"c":[500,773],"o":[445,718]},
+  {"h":[878,732],"c":[800,732],"o":[878,650],"main":true}
+ ],
+ "windows":[[313,60,325,113],[207,167,232,177],[400,709,448,718],[777,755,787,824]]
+}
