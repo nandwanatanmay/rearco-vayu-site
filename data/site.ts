@@ -35,6 +35,44 @@ export const vayu = {
   offer: "Inaugural price locked for the first 50 bookings", // TODO(real-data)
 };
 
+/**
+ * Every project ReaRCo is building or taking forward. Add new ones here and they appear in the
+ * header "Projects" menu, the footer and the home-page Projects section automatically.
+ */
+export type Project = {
+  slug: string;
+  name: string;
+  short: string;
+  location: string;
+  status: string;
+  blurb: string;
+  href: string;
+  image: string | null;
+};
+
+export const projects: Project[] = [
+  {
+    slug: "vayu",
+    name: "Vāyu @ KVD Windpark",
+    short: "Vāyu",
+    location: vayu.location,
+    status: "Now booking",
+    blurb: "Seven towers revived under SWAMIH funding, designed around wind, light and greenery.",
+    href: vayu.href,
+    image: "/projects/vayu-towers.jpg",
+  },
+  {
+    slug: "sabari-serenity",
+    name: "Sabari Serenity",
+    short: "Serenity",
+    location: "Siruseri Main Road, Thalambur, Siruseri, Chennai",
+    status: "Coming soon", // TODO(real-data): confirm launch status and RERA
+    blurb: "A Sabari Realtors project, now with ReaRCo. Details will be announced soon.",
+    href: "/projects/sabari-serenity",
+    image: null,
+  },
+];
+
 export const trustStats = [
   { value: "SWAMIH", label: "Funded under the Government of India's last-mile fund" },
   { value: "UPRERA", label: `Registered project ${vayu.rera}` },

@@ -57,3 +57,10 @@ The enquiry drawer (`components/lead/EnquiryDrawer.tsx`) handles every call to a
 - Illustrations are code (`components/art/*`), so they re-light with the theme. Replace them with real renders when they're ready, but keep the dusk toggle working by swapping between a day and a dusk render.
 
 See `AGENT_BRIEF.md` for the full product brief.
+
+## Projects
+`data/site.ts` → `projects` drives the header **Projects** menu, the footer and the home-page Projects section.
+Add an entry there to list a new project. `/projects/sabari-serenity` is a coming-soon page until details are confirmed.
+
+## Façade colours
+The 3D hero follows the approved external paint scheme and the marketing renders — see `docs/FACADE_ANALYSIS.md`.

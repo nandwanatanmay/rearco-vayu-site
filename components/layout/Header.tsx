@@ -8,11 +8,10 @@ import { Logo } from "@/components/art/CompassMark";
 import { Button } from "@/components/ui/Button";
 import { useEnquiry } from "@/components/providers/EnquiryProvider";
 import { useTime } from "@/components/providers/TimeProvider";
-import { company, navBrands, vayu } from "@/data/site";
+import { company, navBrands, projects } from "@/data/site";
 import { cn } from "@/lib/cn";
 
 const links = [
-  { label: "Vāyu", href: vayu.href },
   { label: "Trust & governance", href: "/trust" },
   { label: "Our approach", href: "/#panchtatva" },
   { label: "About", href: "/#about" },
@@ -42,12 +41,62 @@ export function TimeToggle({ className }: { className?: string }) {
   );
 }
 
+function NavDropdown({
+  label,
+  width,
+  children,
+}: {
+  label: string;
+  width: string;
+  children: (close: () => void) => React.ReactNode;
+}) {
+  const [isOpen, setOpen] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const show = () => {
+    if (timer.current) clearTimeout(timer.current);
+    setOpen(true);
+  };
+  const hide = () => {
+    timer.current = setTimeout(() => setOpen(false), 140);
+  };
+  return (
+    <div className="relative" onMouseEnter={show} onMouseLeave={hide}>
+      <button
+        className="flex items-center gap-1 rounded-full px-3.5 py-2 text-sm text-ink hover:bg-ink/5"
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+        onClick={() => setOpen((v) => !v)}
+        onFocus={show}
+      >
+        {label} <ChevronDown size={14} className={cn("transition-transform", isOpen && "rotate-180")} />
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.2 }}
+            className={cn(
+              "absolute left-1/2 top-full mt-3 -translate-x-1/2 rounded-2xl bg-surface p-3 shadow-[0_30px_60px_-20px_rgba(30,43,35,0.35)] ring-1 ring-line",
+              width,
+            )}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
+            }}
+          >
+            {children(() => setOpen(false))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export function Header() {
   const { open } = useEnquiry();
   const [scrolled, setScrolled] = useState(false);
-  const [brandsOpen, setBrandsOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -59,14 +108,6 @@ export function Header() {
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
   }, [mobileOpen]);
-
-  const showBrands = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    setBrandsOpen(true);
-  };
-  const hideBrands = () => {
-    closeTimer.current = setTimeout(() => setBrandsOpen(false), 140);
-  };
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
@@ -81,47 +122,55 @@ export function Header() {
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
-          <div className="relative" onMouseEnter={showBrands} onMouseLeave={hideBrands}>
-            <button
-              className="flex items-center gap-1 rounded-full px-3.5 py-2 text-sm text-ink hover:bg-ink/5"
-              aria-expanded={brandsOpen}
-              aria-haspopup="true"
-              onClick={() => setBrandsOpen((v) => !v)}
-              onFocus={showBrands}
-            >
-              Our brands <ChevronDown size={14} className={cn("transition-transform", brandsOpen && "rotate-180")} />
-            </button>
-            <AnimatePresence>
-              {brandsOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute left-1/2 top-full mt-3 w-[620px] -translate-x-1/2 rounded-2xl bg-surface p-3 shadow-[0_30px_60px_-20px_rgba(30,43,35,0.35)] ring-1 ring-line"
-                  onBlur={(e) => {
-                    if (!e.currentTarget.contains(e.relatedTarget as Node)) setBrandsOpen(false);
-                  }}
-                >
-                  <div className="grid grid-cols-3 gap-2">
-                    {navBrands.map((b, i) => (
-                      <Link
-                        key={b.name}
-                        href={b.href}
-                        className="group rounded-xl p-4 transition-colors hover:bg-ink/5"
-                        onClick={() => setBrandsOpen(false)}
-                      >
-                        <BrandSwatch index={i} />
-                        <div className="mt-4 font-display text-xl">{b.name}</div>
-                        <p className="mt-1 text-xs leading-relaxed text-ink-soft">{b.promise}</p>
-                        <span className="mt-3 inline-block text-xs font-medium text-accent">{b.status}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          <NavDropdown label="Projects" width="w-[460px]">
+            {(close) => (
+              <div className="grid gap-1">
+                {projects.map((p) => (
+                  <Link
+                    key={p.slug}
+                    href={p.href}
+                    onClick={close}
+                    className="group flex items-center gap-4 rounded-xl p-3 transition-colors hover:bg-ink/5"
+                  >
+                    <span className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-mist/60">
+                      {p.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.image} alt="" className="h-full w-full object-cover" loading="lazy" />
+                      ) : (
+                        <span className="flex h-full items-end gap-1 p-2">
+                          {[0.5, 0.8, 1, 0.65].map((h, i) => (
+                            <span key={i} className="w-full rounded-sm bg-moss" style={{ height: `${h * 70}%`, opacity: 0.5 + i * 0.12 }} />
+                          ))}
+                        </span>
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-display text-xl leading-tight">{p.name}</span>
+                      <span className="mt-0.5 block truncate text-xs text-ink-soft">{p.location}</span>
+                      <span className="mt-1 inline-block text-xs font-medium text-accent">{p.status}</span>
+                    </span>
+                  </Link>
+                ))}
+                <Link href="/#projects" onClick={close} className="mt-1 rounded-xl px-3 py-2.5 text-sm font-medium text-accent hover:bg-ink/5">
+                  View all projects →
+                </Link>
+              </div>
+            )}
+          </NavDropdown>
+          <NavDropdown label="Our brands" width="w-[620px]">
+            {(close) => (
+              <div className="grid grid-cols-3 gap-2">
+                {navBrands.map((b, i) => (
+                  <Link key={b.name} href={b.href} className="group rounded-xl p-4 transition-colors hover:bg-ink/5" onClick={close}>
+                    <BrandSwatch index={i} />
+                    <div className="mt-4 font-display text-xl">{b.name}</div>
+                    <p className="mt-1 text-xs leading-relaxed text-ink-soft">{b.promise}</p>
+                    <span className="mt-3 inline-block text-xs font-medium text-accent">{b.status}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </NavDropdown>
           {links.map((l) => (
             <Link key={l.href} href={l.href} className="rounded-full px-3.5 py-2 text-sm text-ink hover:bg-ink/5">
               {l.label}
@@ -167,7 +216,7 @@ export function Header() {
               </button>
             </div>
             <nav className="mt-10 flex flex-col" aria-label="Mobile">
-              {[...links, ...navBrands.map((b) => ({ label: b.name, href: b.href }))].map((l, i) => (
+              {[...projects.map((p) => ({ label: p.name, href: p.href })), ...links, ...navBrands.map((b) => ({ label: b.name, href: b.href }))].map((l, i) => (
                 <motion.div key={l.href + l.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * i }}>
                   <Link href={l.href} onClick={() => setMobileOpen(false)} className="block border-b border-line py-4 font-display text-3xl">
                     {l.label}

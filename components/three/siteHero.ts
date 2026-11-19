@@ -3,6 +3,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import footprints from "@/data/siteFootprints.json";
 
 /**
@@ -37,9 +38,9 @@ const LEVELS: Record<string, number> = {
 type Key = { h: number; top: string; hor: string; sun: string; ground: string };
 const KEYS: Key[] = [
   { h: 6, top: "#6f7ea6", hor: "#f2c39e", sun: "#ffb27a", ground: "#7d8a6a" },
-  { h: 8, top: "#93b3d0", hor: "#efe7da", sun: "#ffe0bd", ground: "#8e9d78" },
-  { h: 12, top: "#8fb6d6", hor: "#e7efe9", sun: "#fffaf0", ground: "#93a37c" },
-  { h: 16.5, top: "#9ab7d0", hor: "#f3dcb8", sun: "#ffdcaa", ground: "#8e9a72" },
+  { h: 8, top: "#7fa9d6", hor: "#efe7da", sun: "#ffe0bd", ground: "#8e9d78" },
+  { h: 12, top: "#6fa4dc", hor: "#e4eef5", sun: "#fffaf0", ground: "#93a37c" },
+  { h: 16.5, top: "#80aada", hor: "#f3dcb8", sun: "#ffdcaa", ground: "#8e9a72" },
   { h: 18, top: "#5f6f9a", hor: "#f2a575", sun: "#ff9a5a", ground: "#6e7457" },
   { h: 19, top: "#2f3658", hor: "#c4705b", sun: "#ff7a45", ground: "#3e4337" },
   { h: 20, top: "#141b30", hor: "#3a3449", sun: "#8a6a7a", ground: "#20261f" },
@@ -81,8 +82,34 @@ function inPoly(x: number, y: number, poly: number[][]) {
   return c;
 }
 
+/**
+ * External finishes. Source: "External paint sample approval on 31.07.2026" and the marketing renders.
+ * The two shade hexes were sampled from a *photo* of the paint cards, so they are approximate —
+ * replace with the manufacturer's official values when confirmed.
+ */
+export const FINISH = {
+  /** Feature wall – "Daisy Blue" (sampled ≈ #A1BADC from the scan, lifted to a paint-card tone). */
+  feature: "#aec5e3",
+  /** Base wall – "Steamed Idlis" (sampled ≈ #DBD9CC from the scan, lifted to a cream). */
+  base: "#ebe6d6",
+  /** Balcony ceiling and railing upstand – white emulsion. */
+  white: "#f6f5f0",
+  /** Balcony back wall – textured base colour, a touch deeper so the recess reads. */
+  balconyWall: "#d9d3c0",
+  /** Metal balcony railing (render: near-black). */
+  railing: "#2f3335",
+  /** Window / door glass (render: cool blue-grey). */
+  glass: "#5f7488",
+  /** Crown cap (render: grey-taupe). */
+  crown: "#9b9a95",
+  /** Pool (render: turquoise). */
+  pool: "#6fd0cf",
+} as const;
+
 /** Façade atlas: 8 bays × 8 floors (32 m × 24 m). Returns colour map + window glow mask. */
-function facade(seed: number, tint = "#f1eee7") {
+function facade(seed: number, opts: { base?: string; feature?: boolean } = {}) {
+  const base = opts.base ?? FINISH.base;
+  const feature = opts.feature ?? true;
   const W = 512;
   const H = 384;
   const bayW = W / 8;
@@ -94,37 +121,52 @@ function facade(seed: number, tint = "#f1eee7") {
   const g = col.getContext("2d")!;
   const e = glow.getContext("2d")!;
   const r = rng(seed);
-  g.fillStyle = tint;
+  g.fillStyle = base;
   g.fillRect(0, 0, W, H);
   e.fillStyle = "#000";
   e.fillRect(0, 0, W, H);
+  if (feature) {
+    // Feature wall: a plain Daisy Blue spine with slim blue pilasters at the wing ends.
+    g.fillStyle = FINISH.feature;
+    g.fillRect(3 * bayW, 0, 2 * bayW, H);
+    g.fillRect(0, 0, 7, H);
+    g.fillRect(W - 7, 0, 7, H);
+  }
   for (let f = 0; f < 8; f++) {
     for (let b = 0; b < 8; b++) {
       const x = b * bayW;
       const y = f * flH;
-      // glass
-      g.fillStyle = "#4f6476";
-      g.fillRect(x + 7, y + 8, bayW - 14, flH - 18);
-      g.fillStyle = "rgba(255,255,255,0.18)";
-      g.fillRect(x + 7, y + 8, bayW - 14, 6);
-      g.fillStyle = tint;
-      g.fillRect(x + bayW / 2 - 1.5, y + 8, 3, flH - 18);
-      // slab band
-      g.fillStyle = "#dcd6cb";
-      g.fillRect(x, y + flH - 6, bayW, 6);
-      // balcony planters: biophilic green bands on some bays
-      if ((b + f * 3) % 4 === 0 || r() > 0.82) {
+      const isFeature = feature && (b === 3 || b === 4);
+      // balcony back wall (textured base colour) – reads as a recess
+      g.fillStyle = isFeature ? "#9fb6d4" : FINISH.balconyWall;
+      g.fillRect(x + 4, y + 5, bayW - 8, flH - 11);
+      // glass door / window
+      const inset = isFeature ? 17 : 11;
+      g.fillStyle = FINISH.glass;
+      g.fillRect(x + inset, y + 8, bayW - inset * 2, flH - 22);
+      g.fillStyle = "rgba(255,255,255,0.2)";
+      g.fillRect(x + inset, y + 8, bayW - inset * 2, 5);
+      g.fillStyle = FINISH.white;
+      g.fillRect(x + bayW / 2 - 1, y + 8, 2, flH - 22);
+      // balcony railing: dark metal balusters + top rail, white upstand below
+      g.fillStyle = FINISH.railing;
+      g.fillRect(x + 4, y + flH - 19, bayW - 8, 2);
+      for (let k = 0; k < 9; k++) g.fillRect(x + 6 + k * ((bayW - 14) / 8), y + flH - 17, 1.4, 8);
+      g.fillStyle = FINISH.white;
+      g.fillRect(x + 4, y + flH - 9, bayW - 8, 4);
+      // slab edge / balcony ceiling – white
+      g.fillRect(x, y + flH - 5, bayW, 5);
+      // the odd planter on the upstand
+      if (r() > 0.9) {
         g.fillStyle = r() > 0.5 ? "#5f7a47" : "#6f8a52";
-        g.fillRect(x + 3, y + flH - 13, bayW - 6, 7);
-        g.fillStyle = "#86a061";
-        for (let k = 0; k < 6; k++) g.fillRect(x + 4 + r() * (bayW - 12), y + flH - 16 + r() * 3, 5, 4);
+        g.fillRect(x + 8 + r() * 20, y + flH - 14, 18, 5);
       }
       // lit windows at night (≈60 %), in a few warm tones
       if (r() > 0.4) {
         const warm = ["#ffcf86", "#ffb866", "#ffe0a8", "#f6a85a"][Math.floor(r() * 4)];
         e.fillStyle = warm;
         e.globalAlpha = 0.55 + r() * 0.45;
-        e.fillRect(x + 7, y + 8, bayW - 14, flH - 18);
+        e.fillRect(x + inset, y + 8, bayW - inset * 2, flH - 22);
         e.globalAlpha = 1;
       }
     }
@@ -138,6 +180,161 @@ function facade(seed: number, tint = "#f1eee7") {
     return t;
   };
   return { map: mk(col), glow: mk(glow) };
+}
+
+/** Podium arcade (club + commercial): pale façade, double-height arched shop bays, arched upper windows. 6 bays × 2 floors (18 m × 6 m). */
+function arcade(seed: number) {
+  const bay = 60;
+  const W = bay * 6;
+  const H = 120;
+  const col = document.createElement("canvas");
+  const glow = document.createElement("canvas");
+  col.width = glow.width = W;
+  col.height = glow.height = H;
+  const g = col.getContext("2d")!;
+  const e = glow.getContext("2d")!;
+  const r = rng(seed);
+  g.fillStyle = "#efeae0";
+  g.fillRect(0, 0, W, H);
+  e.fillStyle = "#000";
+  e.fillRect(0, 0, W, H);
+  const arch = (c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
+    c.beginPath();
+    c.moveTo(x, y + h);
+    c.lineTo(x, y + w / 2);
+    c.arc(x + w / 2, y + w / 2, w / 2, Math.PI, 0);
+    c.lineTo(x + w, y + h);
+    c.closePath();
+    c.fill();
+  };
+  // cornice between floors and at the parapet
+  g.fillStyle = "#d9d3c6";
+  g.fillRect(0, H / 2 - 3, W, 5);
+  g.fillRect(0, 0, W, 5);
+  for (let b = 0; b < 6; b++) {
+    const x = b * bay;
+    // ground floor: arched shop openings (white frame, dark glass)
+    g.fillStyle = FINISH.white;
+    arch(g, x + 8, H / 2 + 8, bay - 16, H / 2 - 8);
+    g.fillStyle = "#47525d";
+    arch(g, x + 11, H / 2 + 11, bay - 22, H / 2 - 11);
+    g.fillStyle = FINISH.white;
+    g.fillRect(x + bay / 2 - 1, H / 2 + 24, 2, H / 2 - 24);
+    // upper floor: smaller arched windows
+    g.fillStyle = FINISH.white;
+    arch(g, x + 17, 12, bay - 34, H / 2 - 22);
+    g.fillStyle = FINISH.glass;
+    arch(g, x + 20, 15, bay - 40, H / 2 - 28);
+    if (r() > 0.25) {
+      e.fillStyle = "#ffcf86";
+      e.globalAlpha = 0.6 + r() * 0.4;
+      arch(e, x + 11, H / 2 + 11, bay - 22, H / 2 - 11);
+      e.globalAlpha = 0.5;
+      arch(e, x + 20, 15, bay - 40, H / 2 - 28);
+      e.globalAlpha = 1;
+    }
+  }
+  const mk = (c: HTMLCanvasElement) => {
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(1 / 18, 1 / 6);
+    t.anisotropy = 8;
+    return t;
+  };
+  return { map: mk(col), glow: mk(glow) };
+}
+
+/** Crown panel: a blue-grey lattice with the compass medallion (ReaRCo mark), as seen on the top storeys in the renders. Stylised, not the official artwork. */
+function crownPanel() {
+  const S = 256;
+  const c = document.createElement("canvas");
+  c.width = c.height = S;
+  const g = c.getContext("2d")!;
+  g.fillStyle = "#b9c4d3";
+  g.fillRect(0, 0, S, S);
+  g.fillStyle = FINISH.white;
+  g.fillRect(0, 0, S, 8);
+  g.fillRect(0, S - 8, S, 8);
+  g.fillRect(0, 0, 8, S);
+  g.fillRect(S - 8, 0, 8, S);
+  // lattice
+  g.strokeStyle = "rgba(246,245,240,0.9)";
+  g.lineWidth = 4;
+  for (let i = 28; i < S; i += 32) {
+    g.beginPath();
+    g.moveTo(i, 12);
+    g.lineTo(i, S - 12);
+    g.moveTo(12, i);
+    g.lineTo(S - 12, i);
+    g.stroke();
+  }
+  // medallion
+  const cx = S / 2;
+  g.fillStyle = FINISH.white;
+  g.beginPath();
+  g.arc(cx, cx, 88, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = "#8a5a2b";
+  g.lineWidth = 7;
+  g.beginPath();
+  g.arc(cx, cx, 78, 0, Math.PI * 2);
+  g.stroke();
+  g.lineWidth = 2.5;
+  g.beginPath();
+  g.arc(cx, cx, 62, 0, Math.PI * 2);
+  g.stroke();
+  // 8-point compass star
+  g.fillStyle = "#a86d32";
+  for (let i = 0; i < 8; i++) {
+    const a = (i * Math.PI) / 4;
+    const long = i % 2 === 0;
+    const len = long ? 60 : 38;
+    g.beginPath();
+    g.moveTo(cx + Math.cos(a) * len, cx + Math.sin(a) * len);
+    g.lineTo(cx + Math.cos(a + 0.28) * 10, cx + Math.sin(a + 0.28) * 10);
+    g.lineTo(cx + Math.cos(a - 0.28) * 10, cx + Math.sin(a - 0.28) * 10);
+    g.closePath();
+    g.fill();
+  }
+  g.fillStyle = "#6e4721";
+  g.beginPath();
+  g.arc(cx, cx, 9, 0, Math.PI * 2);
+  g.fill();
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/** One stylised palm (trunk + fronds) with vertex colours, merged so thousands cost one draw call. */
+function palmGeometry() {
+  const parts: THREE.BufferGeometry[] = [];
+  const paint = (geo: THREE.BufferGeometry, hex: string) => {
+    const c = new THREE.Color(hex);
+    const n = geo.attributes.position.count;
+    const arr = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) c.toArray(arr, i * 3);
+    geo.setAttribute("color", new THREE.BufferAttribute(arr, 3));
+    return geo;
+  };
+  const trunk = new THREE.CylinderGeometry(0.28, 0.5, 9, 6);
+  trunk.translate(0, 4.5, 0);
+  parts.push(paint(trunk.toNonIndexed(), "#8a7a62"));
+  for (let i = 0; i < 9; i++) {
+    const frond = new THREE.PlaneGeometry(1.1, 5.2, 1, 3);
+    // droop the tip
+    const pos = frond.attributes.position as THREE.BufferAttribute;
+    for (let k = 0; k < pos.count; k++) pos.setZ(k, -Math.pow((pos.getY(k) + 2.6) / 5.2, 2) * 1.8);
+    frond.translate(0, 2.6, 0);
+    frond.rotateX(-0.5);
+    frond.rotateY((i / 9) * Math.PI * 2);
+    frond.translate(0, 9, 0);
+    parts.push(paint(frond.toNonIndexed(), i % 2 ? "#3f7a3c" : "#4c8a45"));
+  }
+  const merged = mergeGeometries(parts, false)!;
+  merged.computeVertexNormals();
+  return merged;
 }
 
 /** Painted site ground: lawns, paved spine, ring road, pool. Drawn in master-plan pixels. */
@@ -180,10 +377,10 @@ function groundTexture() {
       g.fillRect(x0, y0, Math.max(...xs) - x0 + 12, Math.max(...ys) - y0 + 12);
     }
   // pools
-  g.fillStyle = "#5fb4d6";
+  g.fillStyle = FINISH.pool;
   g.fillRect(352, 598, 82, 168);
   g.fillRect(413, 588, 32, 34);
-  g.fillStyle = "#7fc6df";
+  g.fillStyle = "#8adbd8";
   g.fillRect(380, 1130, 40, 50);
   // garden beds
   g.fillStyle = "rgba(80,110,55,0.55)";
@@ -322,6 +519,7 @@ export class SiteHero {
     // Towers.
     const fp = footprints as Record<string, number[][][]>;
     const fac = facade(11);
+    const arc = arcade(5);
     const roof = new THREE.MeshStandardMaterial({ color: "#d9d4ca", roughness: 0.95 });
     const side = new THREE.MeshStandardMaterial({
       map: fac.map,
@@ -330,9 +528,18 @@ export class SiteHero {
       emissiveIntensity: 0,
       roughness: 0.8,
     });
-    this.glowMats.push(side);
-    const lowSide = new THREE.MeshStandardMaterial({ color: "#efe9dd", roughness: 0.9 });
-    const crownMat = new THREE.MeshStandardMaterial({ color: "#5f7a47", roughness: 0.9, flatShading: true });
+    const podium = new THREE.MeshStandardMaterial({
+      map: arc.map,
+      emissiveMap: arc.glow,
+      emissive: new THREE.Color("#ffffff"),
+      emissiveIntensity: 0,
+      roughness: 0.85,
+    });
+    this.glowMats.push(side, podium);
+    const crownMat = new THREE.MeshStandardMaterial({ color: FINISH.crown, roughness: 0.85 });
+    const planterMat = new THREE.MeshStandardMaterial({ color: "#5f7a47", roughness: 0.9, flatShading: true });
+    const panelMat = new THREE.MeshStandardMaterial({ map: crownPanel(), roughness: 0.7 });
+    const camDir = new THREE.Vector2(0.81, 0.58); // the way the hero camera looks in from
     for (const [id, polys] of Object.entries(fp)) {
       const height = (LEVELS[id] ?? 2) * 3;
       const tower = height > 20;
@@ -340,21 +547,48 @@ export class SiteHero {
         const shape = new THREE.Shape(poly.map(([x, y]) => new THREE.Vector2((x - CX) * PX, -(y - CY) * PX)));
         const geo = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false });
         geo.rotateX(-Math.PI / 2);
-        const m = new THREE.Mesh(geo, [roof, tower ? side : lowSide]);
+        const m = new THREE.Mesh(geo, [roof, tower ? side : podium]);
         m.castShadow = m.receiveShadow = true;
         scene.add(m);
         if (tower) {
-          // Roof garden: a crown of green on every tower.
           const xs = poly.map((q) => q[0]);
           const ys = poly.map((q) => q[1]);
           const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
           const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
-          const w = (Math.max(...xs) - Math.min(...xs)) * PX * 0.55;
-          const d = (Math.max(...ys) - Math.min(...ys)) * PX * 0.55;
-          const rg = new THREE.Mesh(new THREE.BoxGeometry(w, 1.2, d), crownMat);
-          rg.position.copy(toW(cx, cy)).setY(height + 0.6);
-          rg.castShadow = true;
-          scene.add(rg);
+          const w = (Math.max(...xs) - Math.min(...xs)) * PX * 0.62;
+          const d = (Math.max(...ys) - Math.min(...ys)) * PX * 0.62;
+          // Crown: grey-taupe cap with rooftop planters.
+          const cap = new THREE.Mesh(new THREE.BoxGeometry(w, 1.6, d), crownMat);
+          cap.position.copy(toW(cx, cy)).setY(height + 0.8);
+          cap.castShadow = true;
+          scene.add(cap);
+          for (let k = 0; k < 4; k++) {
+            const pl = new THREE.Mesh(new THREE.BoxGeometry(w * 0.22, 1, d * 0.2), planterMat);
+            pl.position.copy(cap.position).add(new THREE.Vector3((k % 2 ? 1 : -1) * w * 0.3, 1.2, (k < 2 ? 1 : -1) * d * 0.3));
+            scene.add(pl);
+          }
+          // Compass-medallion lattice panel on the façade that faces the entrance / camera.
+          const pts = poly.map(([x, y]) => toW(x, y));
+          const centre = toW(cx, cy);
+          let best: { n: THREE.Vector2; mid: THREE.Vector3; score: number } | null = null;
+          for (let i = 0; i < pts.length; i++) {
+            const a = pts[i];
+            const b = pts[(i + 1) % pts.length];
+            const len = Math.hypot(b.x - a.x, b.z - a.z);
+            if (len < 8) continue;
+            let n = new THREE.Vector2((b.z - a.z) / len, -(b.x - a.x) / len);
+            const mid = a.clone().add(b).multiplyScalar(0.5);
+            if (n.x * (mid.x - centre.x) + n.y * (mid.z - centre.z) < 0) n = n.negate();
+            const score = n.dot(camDir) * Math.min(len, 30);
+            if (!best || score > best.score) best = { n, mid, score };
+          }
+          if (best && best.score > 0) {
+            const size = Math.min(11, Math.max(6, Math.hypot(w, d) * 0.28));
+            const panel = new THREE.Mesh(new THREE.PlaneGeometry(size, size), panelMat);
+            panel.position.set(best.mid.x + best.n.x * 0.08, height - size / 2 - 3, best.mid.z + best.n.y * 0.08);
+            panel.rotation.y = Math.atan2(best.n.x, best.n.y);
+            scene.add(panel);
+          }
         }
       }
     }
@@ -406,6 +640,24 @@ export class SiteHero {
     crowns.receiveShadow = true;
     scene.add(trunks, crowns);
 
+    // Palms along the central avenue and the site entrance (a signature of the renders).
+    {
+      const pal = palmGeometry();
+      const palmPts: [number, number, number][] = [];
+      for (let y = 420; y < 1350; y += 70) palmPts.push([358, y, 0.9 + r() * 0.3], [442, y + 35, 0.9 + r() * 0.3]);
+      for (let x = 150; x < 660; x += 90) palmPts.push([x, 1385, 1 + r() * 0.3]);
+      const palms = new THREE.InstancedMesh(pal, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, side: THREE.DoubleSide }), palmPts.length);
+      const qy = new THREE.Quaternion();
+      palmPts.forEach(([x, y, sc], i) => {
+        const p = toW(x, y);
+        qy.setFromAxisAngle(new THREE.Vector3(0, 1, 0), r() * 6);
+        m4.compose(p, qy, new THREE.Vector3(sc, sc, sc));
+        palms.setMatrixAt(i, m4);
+      });
+      palms.castShadow = true;
+      scene.add(palms);
+    }
+
     // Garden lamps: glow after dusk.
     this.lampMat = new THREE.MeshStandardMaterial({ color: "#3a3428", emissive: new THREE.Color("#ffc477"), emissiveIntensity: 0 });
     const lampPts: THREE.Vector3[] = [];
@@ -420,7 +672,7 @@ export class SiteHero {
     scene.add(lamps);
 
     // City context: low blocks in the haze, with their own window glow.
-    const ctxFac = facade(99, "#e7e2d8");
+    const ctxFac = facade(99, { base: "#e7e2d8", feature: false });
     const ctxMat = new THREE.MeshStandardMaterial({ map: ctxFac.map, emissiveMap: ctxFac.glow, emissive: new THREE.Color("#ffffff"), emissiveIntensity: 0, roughness: 0.9 });
     this.glowMats.push(ctxMat);
     const ctxTop = new THREE.MeshStandardMaterial({ color: "#d7d1c5" });

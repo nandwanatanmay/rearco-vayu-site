@@ -2,10 +2,11 @@ import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { CompassMark } from "@/components/art/CompassMark";
 import { Mosaic } from "@/components/art/Mosaic";
-import { company, navBrands, vayu } from "@/data/site";
+import { company, navBrands, projects, vayu } from "@/data/site";
 
 const quick = [
-  { label: "Vāyu @ KVD Windpark", href: vayu.href },
+  { label: "Projects", href: "/#projects" },
+  ...projects.map((p) => ({ label: p.name, href: p.href })),
   { label: "Trust & governance", href: "/trust" },
   { label: "Our approach", href: "/#panchtatva" },
   { label: "About ReaRCo", href: "/#about" },
