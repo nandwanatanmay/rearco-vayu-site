@@ -1,66 +1,59 @@
-# Wind Park – Interactive Floor Plans (React + TypeScript)
+# rearco.in — redesign
 
-An interactive SVG floor plan viewer built from the supplied brochure drawings:
-7 unit plans (Tower 1, Tower 2 & 3 – Types 1245 / 1505; Tower 6 & 7 – Types 997‑1/2/3) plus the site master plan.
+The new ReaRCo website, built with Next.js (App Router), TypeScript, Tailwind CSS v4 and Framer Motion.
 
-## Run
+## Run it
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
-npm run build      # -> dist/index.html : ONE self-contained file, open it directly in a browser
+npm run dev        # http://localhost:3000
+npm run build      # production build
+npm run lint       # type-check
 ```
 
-## Features
-- Plan picker (site plan + 7 unit types); site plan towers link to their unit plans
-- Click a room to select it (info panel: printed name, area, size, type, fixtures, notes); hover highlight; Esc / ✕ to clear
-- Wheel / pinch zoom, drag to pan, zoom buttons, fit to screen (F), reset (0), full screen, smooth transitions
-- Layers: walls, room labels, dimensions, doors & windows, furniture & fixtures, structural elements, PL shafts,
-  room colours, and the **original drawing overlay** (with opacity) to check alignment
-- Colour-coded room types with a clickable legend
-- Responsive: desktop, tablet and phone
+## Pages
 
-## 3D (three.js)
-- **3D site** (`#site3d`): massing model on the rendered site plan. Towers are extruded from footprints traced off the plan
-  (heights from the marked storeys, e.g. S+24, at an assumed 3 m per floor; Towers 4 & 5 have no marking and are shown translucent).
-  - **Map** mode: Google-Maps-style – drag to pan, right-drag / two fingers to rotate & tilt, scroll to zoom
-  - **Walk** mode: first person at eye height – W A S D / arrows, drag to look, Shift to run, on-screen joystick on touch; buildings block you
-  - **Auto tour**: 15 narrated stops (🔊 toggles spoken narration via the browser's speech engine), Prev / Next / pause
-  - Click a building, amenity, label or the mini-map to fly there; towers list their unit plans (2D plan / 3D walk)
-- **3D walk-through of each unit** (`#u3d:<plan id>`, or the "3D walk-through" button on any plan): walls extruded from the
-  vectorised drawing, plan artwork on the floor, windows (sill/glass/lintel), open door leaves, balcony glass rails;
-  dollhouse view, walk mode with wall collision, auto tour room-by-room with printed sizes.
-  Scale is estimated from the printed room sizes; ceiling 2.9 m, sill 0.9 m, door head 2.1 m are assumptions.
+| Route | What it is |
+|---|---|
+| `/` | Corporate home: real-time 3D hero with a sun-path timeline, trust marquee, name unfolding on scroll, a tower that builds itself through the revival years, Panchtatva panels, brands, the Vāyu plan reveal, values as moving type, vision read word by word |
+| `/rearco-select/vayu-kvd-windpark` | Vāyu microsite: unit explorer (filters, sq ft/sq m, 2D/3D plan, zoom, EMI), master plan, amenities, specs, location, progress, clearances, FAQ |
+| `/trust` | Trust & governance hub |
+| `/brands/exquisite`, `/brands/royale` | Coming-soon brand pages (Select redirects to Vāyu) |
+| `/legal/disclaimer`, `/legal/privacy` | Legal text (needs legal sign-off) |
+| `/api/lead` | Lead intake used by the enquiry drawer |
 
-## How the geometry was produced (accuracy notes)
-- **Walls** are vectorised from the drawings by colour thresholding + contour tracing, so wall
-  positions and thicknesses come from the drawings rather than being hand-drawn.
-- **Room boundaries, doors and windows** were traced by hand in source-pixel coordinates
-  (`tools/spec/*.json`) and checked against the drawings with overlay renders (`tools/check.py`).
-  Tower 2&3 Type 1245 and Type 1505 reuse the Tower 1 Type 1245 tracing, registered onto those drawings.
-- **Every number shown is a printed value** (dimensions in mm, areas in m²). Nothing is scaled off the image –
-  the drawings are not consistently to scale.
-- **Furniture & fixtures** are the drawing's own artwork with the text and door swings removed
-  (inpainting), clipped to the rooms.
-- Uncertain items are flagged in the UI: unlabelled X‑marked voids (assumed shafts), the unlabelled
-  utility balcony on Tower 1 / Tower 2&3 Type 1505, kitchen area not printed on two plans, a few door swings
-  that can't be read clearly (amber arcs), and "structural" blocks (thick walls, not marked as RCC on the source).
-- Source quirks are kept and noted: "LIVING/DINNIG" spelling; "Tower 2 & 3 Type 1505" has the
-  same layout as Type 1245 but different printed areas; Type 997‑3 repeats the Bedroom 2 label in the passage.
-- No electrical points appear on the drawings, so that layer is shown as disabled.
+## Changing content
 
-## Structure
+All copy, numbers and unit data live in **`data/site.ts`**. Every value that still needs confirming is marked `TODO(real-data)`:
+
+```bash
+grep -rn "TODO(" app components data
 ```
-src/
-  App.tsx                       plan picker, full-screen
-  components/FloorPlanViewer.tsx viewer state: selection, layers, legend filter, shortcuts
-  components/PlanCanvas.tsx     SVG rendering of all layers
-  components/Panels.tsx         toolbar, layer panel, legend, room info
-  components/MasterPlanView.tsx site plan with hotspots
-  hooks/usePanZoom.ts           pointer/wheel/pinch pan & zoom
-  data/types.ts                 PlanData / Room / Door types
-  data/plans.generated.ts       generated plan data (walls, rooms, doors, windows)
-  data/masterPlan.ts            site-plan hotspots
-tools/                          extraction pipeline (Python + OpenCV) and hand-traced specs
-```
-Regenerate the data with: `python3 tools/gen.py <folder-with-the-original-jpegs>`.
+
+- **Units / floor plans**: `units` array. Each layout appears once. `rooms` draws the SVG plan on a 0–100 grid. To use real plan images instead, add an `image` field and render it in `components/vayu/FloorPlan.tsx`.
+- **Clearance PDFs**: put the files in `public/clearances/` and set each `href` in `clearances`.
+- **Progress photos**: extend `progress` with image paths and render them in `components/vayu/Sections.tsx → Progress`.
+
+## Leads
+
+The enquiry drawer (`components/lead/EnquiryDrawer.tsx`) handles every call to action on the site: details → OTP → confirmation.
+
+- The OTP step is **stubbed** (any 4 digits pass). Wire up a provider such as MSG91 or Twilio Verify where marked `TODO(otp-provider)`.
+- Set `LEAD_WEBHOOK_URL` in `.env.local` to forward leads to your CRM, Zapier or Google Sheet. Without it, leads are logged to the server console.
+
+## The 3D hero
+
+`components/three/siteHero.ts` renders Vāyu @ KVD Windpark in WebGL (three.js, loaded lazily after the page paints).
+
+- **Massing:** tower footprints come from `data/siteFootprints.json`, traced from the project master plan at about 0.2 m per plan pixel. Heights follow the plan's storey markings (S+22 and S+24) at an assumed 3 m per floor. Façades, trees and landscape are stylised, so treat the scene as an artistic impression.
+- **Light:** the sun-path timeline (`SunDial` in `components/home/Hero.tsx`) sets `hour` in `TimeProvider`, from 6 to 21. The scene moves the sun, sky and fog with it, and from about 18:00 the windows and garden lamps light up. The page theme switches to dusk at 18:24 (`DUSK_AT`).
+- **Performance and access:** rendering pauses when the hero is off-screen or the tab is hidden. Phones and low-core devices use a lighter path with no bloom and smaller shadows. With `prefers-reduced-motion`, the camera stays still. Without WebGL, a CSS sky shows instead.
+- **Plan art:** `public/plans/*.jpg` holds furnished plan art from the Vāyu brochure (Type 1245 and Type 997), used in the home-page reveal.
+
+## Design system
+
+- Tokens are in `app/globals.css`. The day theme is sage; the dusk theme is deep forest with gold. `<html data-time="day|night">` switches between them through `components/providers/TimeProvider.tsx`.
+- Fonts: Cormorant Garamond (display), Plus Jakarta Sans (UI).
+- Illustrations are code (`components/art/*`), so they re-light with the theme. Replace them with real renders when they're ready, but keep the dusk toggle working by swapping between a day and a dusk render.
+
+See `AGENT_BRIEF.md` for the full product brief.

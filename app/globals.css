@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+/* ───────── Design tokens ─────────
+   Day  = sage dawn (default)
+   Night = deep forest dusk, warm lit windows
+   Switched by [data-time] on <html> (ThemeProvider). */
+:root {
+  --mist: #cdd6ce;
+  --mist-2: #dde4dd;
+  --paper: #f3f5f0;
+  --forest: #1e2b23;
+  --forest-2: #2a3a30;
+  --moss: #5b6f50;
+  --moss-soft: #a3b19a;
+  --maroon: #6b1e2b;
+  --maroon-2: #8a2a3a;
+  --gold: #b8914a;
+  --gold-soft: #d9bd85;
+  --ember: #f0b765;
+
+  /* semantic (day) */
+  --bg: var(--paper);
+  --bg-sky: var(--mist);
+  --surface: #ffffff;
+  --ink: var(--forest);
+  --ink-soft: #4b5a50;
+  --line: rgba(30, 43, 35, 0.14);
+  --accent: var(--maroon);
+  --accent-ink: #ffffff;
+  --glow: transparent;
+}
+
+:root[data-time="night"] {
+  --bg: #121b16;
+  --bg-sky: #1b2a22;
+  --surface: #1d2b23;
+  --ink: #eef1e8;
+  --ink-soft: #aebaa9;
+  --line: rgba(238, 241, 232, 0.16);
+  --accent: var(--gold);
+  --accent-ink: #1e2b23;
+  --glow: rgba(240, 183, 101, 0.35);
+}
+
+@theme inline {
+  --color-mist: var(--mist);
+  --color-paper: var(--paper);
+  --color-forest: var(--forest);
+  --color-forest-2: var(--forest-2);
+  --color-paper-fixed: #f3f5f0;
+  --color-moss: var(--moss);
+  --color-maroon: var(--maroon);
+  --color-gold: var(--gold);
+  --color-ember: var(--ember);
+  --color-bg: var(--bg);
+  --color-sky: var(--bg-sky);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.9s ease, color 0.9s ease;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--maroon);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Display type: large serif caps, tight tracking */
+.display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 0.95;
+}
+.display,
+.display-lower,
+.font-display {
+  font-variant-numeric: lining-nums proportional-nums;
+}
+.display-lower {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+}
+
+.surface-transition {
+  transition: background-color 0.9s ease, color 0.9s ease, border-color 0.9s ease,
+    box-shadow 0.9s ease;
+}
+
+/* Glass */
+.glass {
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+/* Soft sweeping light bars behind the hero tower (Urbansquare-style) */
+.lightbar {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
+}
+:root[data-time="night"] .lightbar {
+  background: linear-gradient(90deg, rgba(240, 183, 101, 0.22), rgba(240, 183, 101, 0));
+}
+
+/* Windows lit at night */
+.win {
+  fill: #2c3a31;
+  transition: fill 0.9s ease;
+}
+:root[data-time="night"] .win {
+  fill: var(--ember);
+}
+:root[data-time="night"] .win.dim {
+  fill: #a97a3f;
+}
+
+/* ───────── Illustration palette (day / night) ───────── */
+.art-body { fill: #eef1ec; transition: fill 0.9s ease; }
+.art-slab { stroke: #c9d0c7; stroke-width: 1; transition: stroke 0.9s ease; }
+.art-leaf-1 { fill: #9fae86; transition: fill 0.9s ease; }
+.art-leaf-2 { fill: #7d8f63; transition: fill 0.9s ease; }
+.art-leaf-3 { fill: #5c6e47; transition: fill 0.9s ease; }
+.art-trunk { stroke: #5f5444; stroke-width: 3; fill: none; stroke-linecap: round; }
+.art-lawn { fill: #a8b593; transition: fill 0.9s ease; }
+.art-plinth { fill: #dfe4dc; transition: fill 0.9s ease; }
+.art-fin-a { stop-color: #ffffff; }
+.art-fin-b { stop-color: #b9c2b9; }
+.win.off { fill: #3a4a40; }
+:root[data-time="night"] .art-body { fill: #24302a; }
+:root[data-time="night"] .art-slab { stroke: #33423a; }
+:root[data-time="night"] .art-leaf-1 { fill: #3d4c36; }
+:root[data-time="night"] .art-leaf-2 { fill: #2e3b2a; }
+:root[data-time="night"] .art-leaf-3 { fill: #222d20; }
+:root[data-time="night"] .art-lawn { fill: #1f2a1e; }
+:root[data-time="night"] .art-plinth { fill: #2c3830; }
+:root[data-time="night"] .art-fin-a { stop-color: #59533f; }
+:root[data-time="night"] .art-fin-b { stop-color: #1e2721; }
+:root[data-time="night"] .win.off { fill: #1a221d; }
+
+/* Marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee 40s linear infinite;
+  width: max-content;
+}
+
+/* Hide scrollbar for snap sliders */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .marquee-track { animation: none; }
+}
+
+/* ───────── Immersive home ───────── */
+.hero-veil {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--bg-sky) 82%, transparent) 0%, color-mix(in srgb, var(--bg-sky) 35%, transparent) 38%, transparent 62%),
+    linear-gradient(0deg, color-mix(in srgb, var(--bg) 70%, transparent) 0%, transparent 32%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-sky) 55%, transparent) 0%, transparent 18%);
+}
+@media (max-width: 1023px) {
+  .hero-veil {
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--bg-sky) 70%, transparent) 0%, color-mix(in srgb, var(--bg-sky) 25%, transparent) 45%, transparent 60%),
+      linear-gradient(0deg, color-mix(in srgb, var(--bg) 85%, transparent) 0%, transparent 40%);
+  }
+}
+
+.marquee-reverse { animation-direction: reverse; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+/* Panchtatva art */
+@keyframes el-orbit { from { transform: rotate(-38deg); } to { transform: rotate(38deg); } }
+.el-orbit { animation: el-orbit 9s ease-in-out infinite alternate; }
+@keyframes el-bar { 0%, 100% { transform: translateX(-14px); } 50% { transform: translateX(14px); } }
+.el-bar { animation: el-bar 7s ease-in-out infinite; }
+@keyframes el-ripple { from { transform: scale(0.4); opacity: 0.9; } to { transform: scale(4.2); opacity: 0; } }
+.el-ripple { transform-box: fill-box; transform-origin: center; animation: el-ripple 4.4s ease-out infinite; }
+@keyframes el-drop { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+.el-drop { animation: el-drop 4.4s ease-in-out infinite; }
+@keyframes el-wind { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -560; } }
+.el-wind { stroke-dasharray: 180 100; animation: el-wind 6s linear infinite; }
+@keyframes el-sway { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+.el-sway { animation: el-sway 5s ease-in-out infinite; }
+@keyframes el-pulse { 0%, 100% { transform: scale(0.92); opacity: 0.85; } 50% { transform: scale(1.06); opacity: 1; } }
+.el-pulse { animation: el-pulse 5s ease-in-out infinite; }
+@keyframes el-win { 0%, 40% { opacity: 0.15; } 55%, 100% { opacity: 0.95; } }
+.el-win { animation: el-win 7.4s ease-in-out infinite alternate; }
+
+.closing-sky {
+  background: radial-gradient(90% 70% at 50% 110%, #f3c58f 0%, #f2dcc0 30%, var(--bg) 70%);
+  transition: background 0.9s ease;
+}
+:root[data-time="night"] .closing-sky {
+  background: radial-gradient(90% 70% at 50% 110%, rgba(240, 183, 101, 0.35) 0%, rgba(240, 183, 101, 0.08) 35%, var(--bg) 70%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .el-orbit, .el-bar, .el-ripple, .el-drop, .el-wind, .el-sway, .el-pulse, .el-win { animation: none; }
+}
