@@ -349,7 +349,7 @@ export function Site3DView({ onOpenPlan, onOpenUnit3D }: Props) {
           ) : (
             <>
               <div className="eyebrow">3D site</div>
-              <h2>Wind Park</h2>
+              <h2>Vāyu · Wind Park</h2>
               <p className="muted">Click a tower, an amenity, a label or the mini-map to fly there. Try <b>Walk</b> or <b>Auto tour</b>.</p>
               <ul className="room-list">
                 {BUILDINGS.map((q) => (

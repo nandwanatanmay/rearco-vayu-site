@@ -54,8 +54,8 @@ export default function App() {
             </svg>
           </span>
           <div>
-            <div className="brand-title">Wind Park</div>
-            <div className="brand-sub">Interactive floor plans</div>
+            <div className="brand-title">Vāyu by ReaRCo</div>
+            <div className="brand-sub">Wind Park · interactive floor plans</div>
           </div>
         </div>
         <nav className="picker" aria-label="Choose plan">

@@ -30,15 +30,18 @@ and 10 stills. (Commercial terms deliberately not copied into the repo.)
 
 ## 4. Implemented in this branch (`feature/approved-facade`)
 - `src/data/facade.ts` – the palette, with sources and caveats.
-- Façade tile redesigned: blue feature bay + cream balcony bay, white ceiling edge/upstand/slab, dark railings.
-- Taupe crown cap, turquoise pool, bluer sky, **palm trees** (edges + entrance).
+- Tower façade tile: blue feature bay + cream balcony bay, white ceiling edge / upstand / slab, dark railings.
+- Crown: taupe cap + a compass-emblem lattice panel near the top of each tower's south (entrance-facing) face
+  (an approximation of the render, **not the official logo artwork**).
+- Podium (club + commercial): arcade tile with arched shop openings and arched upper windows.
+- Turquoise pool, bluer sky, palm trees along the edges and entrance.
+- Branding text: "Vāyu by ReaRCo · Wind Park" in the header, 3D-site panel, tour intro and page title.
 
-## 5. Still to do (needs drawings / decisions)
+## 5. Still to do (needs drawings, artwork or decisions)
 1. Confirm paint codes + official colour values (replace the approximations in `facade.ts`).
-2. Tower elevations (drawings) → real feature/base wall layout instead of a repeating tile.
-3. Crown: compass medallion + lattice panel, rooftop planters (needs elevation + facing direction per tower).
-4. Podium/commercial: arcade, arched windows, stilt level; basement parking level.
-5. Entrance gate with signage and timber fins; lamp posts.
-6. Amenity colours (court, pool, club roof) in the ground texture — currently the master-plan rendering.
-7. Re-skin UI from "Wind Park" to Vāyu / ReaRCo branding (logo, name, colours).
-8. Unit walk-through: balcony/exterior finishes seen from inside; interiors for the 3 units in the proposal.
+2. Tower elevation drawings → real feature/base wall layout instead of a repeating tile.
+3. Official ReaRCo / Vāyu logo files (header, gate signage, crown emblem) and brand colours.
+4. Rooftop planters and the exact crown geometry (needs elevations).
+5. Entrance gate (timber fins, signage, lamp posts) – needs exact gate position/dimensions from the plan.
+6. Basement / stilt parking levels; amenity colours (court, pool, club roof) – currently the master-plan image.
+7. Unit walk-through: balcony/exterior finishes; interiors for the 3 units in the proposal.

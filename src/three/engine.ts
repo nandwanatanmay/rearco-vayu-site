@@ -445,3 +445,113 @@ export function facadeTexture(pal: { base: string; feature: string; white: strin
   t.anisotropy = 8;
   return t;
 }
+
+/**
+ * Podium / commercial facade: two storeys (6 m) × one 6 m bay.
+ * Ground floor – arched shop openings between pilasters; first floor – arched windows (as in the renders).
+ */
+export function podiumTexture(pal: { base: string; white: string; glass: string; balconyWall: string } = FACADE) {
+  const c = document.createElement('canvas');
+  c.width = 192;
+  c.height = 192;
+  const g = c.getContext('2d')!;
+  g.fillStyle = pal.base;
+  g.fillRect(0, 0, 192, 192);
+  const arch = (x: number, y: number, w: number, h: number, fill: string) => {
+    g.fillStyle = fill;
+    g.beginPath();
+    g.moveTo(x, y + h);
+    g.lineTo(x, y + w / 2);
+    g.arc(x + w / 2, y + w / 2, w / 2, Math.PI, 0);
+    g.lineTo(x + w, y + h);
+    g.closePath();
+    g.fill();
+  };
+  // Upper storey.
+  g.fillStyle = pal.balconyWall;
+  g.fillRect(0, 84, 192, 6); // cornice shadow
+  arch(48, 18, 40, 52, pal.white);
+  arch(54, 24, 28, 46, pal.glass);
+  arch(112, 18, 40, 52, pal.white);
+  arch(118, 24, 28, 46, pal.glass);
+  g.fillStyle = pal.white;
+  g.fillRect(0, 90, 192, 6); // slab / cornice
+  // Ground storey: shop arches + pilasters.
+  arch(30, 112, 132, 80, pal.white);
+  arch(38, 120, 116, 72, pal.glass);
+  g.fillStyle = 'rgba(255,255,255,0.18)';
+  g.fillRect(38, 160, 116, 6);
+  g.fillStyle = pal.balconyWall;
+  g.fillRect(94, 150, 4, 42); // shopfront mullion
+  g.fillStyle = pal.white;
+  g.fillRect(0, 96, 14, 96);
+  g.fillRect(178, 96, 14, 96);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(1 / 6, 1 / 6);
+  t.anisotropy = 8;
+  return t;
+}
+
+/**
+ * Crown medallion: compass-rose emblem inside a lattice panel — an approximation of the
+ * tower-top feature in the renders (not the official logo artwork).
+ */
+export function medallionTexture() {
+  const S = 512;
+  const c = document.createElement('canvas');
+  c.width = c.height = S;
+  const g = c.getContext('2d')!;
+  g.fillStyle = FACADE.white;
+  g.fillRect(0, 0, S, S);
+  // lattice
+  g.strokeStyle = FACADE.balconyWall;
+  g.lineWidth = 6;
+  for (let i = 32; i < S; i += 64) {
+    g.beginPath();
+    g.moveTo(i, 0);
+    g.lineTo(i, S);
+    g.moveTo(0, i);
+    g.lineTo(S, i);
+    g.stroke();
+  }
+  g.strokeStyle = FACADE.feature;
+  g.lineWidth = 12;
+  g.strokeRect(10, 10, S - 20, S - 20);
+  const cx = S / 2;
+  // disc + ring
+  g.fillStyle = '#e9e1cf';
+  g.beginPath();
+  g.arc(cx, cx, 190, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = '#a77f3a';
+  g.lineWidth = 16;
+  g.beginPath();
+  g.arc(cx, cx, 182, 0, Math.PI * 2);
+  g.stroke();
+  g.lineWidth = 5;
+  g.beginPath();
+  g.arc(cx, cx, 150, 0, Math.PI * 2);
+  g.stroke();
+  // 8-point compass star
+  g.fillStyle = '#a77f3a';
+  for (let k = 0; k < 8; k++) {
+    const a = (k * Math.PI) / 4;
+    const len = k % 2 === 0 ? 142 : 92;
+    g.beginPath();
+    g.moveTo(cx + Math.cos(a) * len, cx + Math.sin(a) * len);
+    g.lineTo(cx + Math.cos(a + 0.28) * 22, cx + Math.sin(a + 0.28) * 22);
+    g.lineTo(cx + Math.cos(a - 0.28) * 22, cx + Math.sin(a - 0.28) * 22);
+    g.closePath();
+    g.fill();
+  }
+  g.fillStyle = '#7a5a22';
+  g.beginPath();
+  g.arc(cx, cx, 16, 0, Math.PI * 2);
+  g.fill();
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}

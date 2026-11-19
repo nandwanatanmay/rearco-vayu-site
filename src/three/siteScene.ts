@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import footprints from '../data/siteFootprints.json';
 import { HOTSPOTS, MASTER } from '../data/masterPlan';
-import { Engine, facadeTexture, inPoly } from './engine';
+import { Engine, facadeTexture, inPoly, medallionTexture, podiumTexture } from './engine';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { FACADE, SITE_COLOURS } from '../data/facade';
 
@@ -55,7 +55,7 @@ export interface TourStop {
 }
 
 export const TOUR: TourStop[] = [
-  { id: '', title: 'Wind Park', text: 'Welcome to Wind Park. The site has seven residential towers, a club, a commercial block and landscaped central amenities.', target: [400, 760], dist: 330, polar: 50, azim: 200 },
+  { id: '', title: 'Vāyu · Wind Park', text: 'Welcome to Vāyu at Wind Park, by ReaRCo. The site has seven residential towers, a club, a commercial block and landscaped central amenities.', target: [400, 760], dist: 330, polar: 50, azim: 200 },
   { id: 'commercial', title: 'Entry & Commercial', text: 'Vehicles enter and exit from the main road at the south, on either side of the commercial block.', target: [400, 1340], dist: 120, polar: 62, azim: 180 },
   { id: 'club', title: 'Club', text: 'The club sits just behind the commercial block, facing the residential towers.', target: [402, 1272], dist: 80, polar: 60, azim: 160 },
   { id: 'reflection', title: 'Reflection Pool', text: 'A reflection pool with fountains leads into the central landscape, between Tower 1 and Tower 2.', target: [400, 1148], dist: 90, polar: 58, azim: 180 },
@@ -127,6 +127,8 @@ export function buildSite(engine: Engine, groundTex: THREE.Texture): SiteScene {
   // Buildings: extrude the footprints traced from the plan.
   const fac = facadeTexture();
   const facGhost = facadeTexture({ base: '#f1eee6', feature: '#cbd8ea', white: '#f6f5f0', balconyWall: '#e6e1d4', railing: '#8b9296', glass: '#9fb0bf' });
+  const fac2 = podiumTexture();
+  const medal = medallionTexture();
   const roofMat = new THREE.MeshStandardMaterial({ color: FACADE.crown, roughness: 0.95 });
   const fp = footprints as Record<string, number[][][]>;
   const buildingMeshes: THREE.Mesh[] = [];
@@ -138,7 +140,7 @@ export function buildSite(engine: Engine, groundTex: THREE.Texture): SiteScene {
     const polys = fp[b.id] ?? [];
     const height = b.levels * FLOOR_H;
     const sideMat = new THREE.MeshStandardMaterial({
-      map: b.ghost ? facGhost : fac,
+      map: b.ghost ? facGhost : b.id === 'club' || b.id === 'commercial' ? fac2 : fac,
       roughness: 0.85,
       transparent: !!b.ghost,
       opacity: b.ghost ? 0.55 : 1,
@@ -169,6 +171,7 @@ export function buildSite(engine: Engine, groundTex: THREE.Texture): SiteScene {
       mesh.add(edges);
     }
     meshById.set(b.id, list);
+    if (!b.ghost && b.id.startsWith('tower')) addCrownMedallions(scene, polys, height, medal);
     const c = centroid(polys.flat() as unknown as [number, number][]);
     engine.addLabel(`${b.name}${b.marking ? ' · ' + b.marking : ''}`, toWorld(c[0], c[1]).setY(height + 4), 'bldg', () => engine.onPick?.(b.id));
   }
@@ -285,4 +288,32 @@ export function stopPose(t: TourStop) {
   const th = THREE.MathUtils.degToRad(t.azim);
   const pos = target.clone().add(new THREE.Vector3(Math.sin(ph) * Math.sin(th), Math.cos(ph), -Math.sin(ph) * Math.cos(th)).multiplyScalar(t.dist));
   return { pos, target };
+}
+
+/**
+ * Crown feature: a lattice panel with the compass emblem near the top of the south (entrance-facing)
+ * elevation of each wing, as seen on the towers in the renders.
+ */
+function addCrownMedallions(scene: THREE.Scene, polys: number[][][], height: number, tex: THREE.Texture) {
+  if (!polys.length) return;
+  const globalMaxY = Math.max(...polys.flat().map((p) => p[1]));
+  // One panel per wing (polygon) whose south edge reaches the tower's southern face.
+  const clusters: number[][] = [];
+  for (const poly of polys) {
+    const maxY = Math.max(...poly.map((p) => p[1]));
+    if (maxY < globalMaxY - 12) continue;
+    const xs = poly.filter((p) => p[1] >= maxY - 4).map((p) => p[0]);
+    if (xs.length < 2) continue;
+    clusters.push([Math.min(...xs), Math.max(...xs), maxY]);
+  }
+  const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.8 });
+  for (const [x0, x1, maxY] of clusters) {
+    const widthPx = x1 - x0;
+    if (widthPx < 30) continue;
+    const size = Math.min(10, widthPx * PX * 0.7);
+    const w = toWorld((x0 + x1) / 2, maxY);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(size, size), mat);
+    m.position.set(w.x, height - size * 0.75, w.z + 0.12);
+    scene.add(m);
+  }
 }
